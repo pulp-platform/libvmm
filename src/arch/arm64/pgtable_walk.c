@@ -42,9 +42,9 @@
     #define MEAS_PERF
 #endif
 
-#ifndef LOG_LVL_PTW
-    #define LOG_LVL_PTW LOG_ERR
-#endif
+//#ifndef LOG_LVL_PTW
+//    #define LOG_LVL_PTW LOG_ERR
+//#endif
 
 /**
  * Get physical address of PMD through PGD index.
@@ -196,17 +196,17 @@ int virt_addr_to_page_phys_addr(const virt_addr_t virt_addr,
             phys_addr_t pmd_phys_addr;
             ret = get_pmd_phys_addr(pgd_index(virt_addr), &pmd_phys_addr);
             if (ret < 0) {
-                #if LOG_LVL_PTW >= LOG_ERR
+                //#if LOG_LVL_PTW >= LOG_ERR
                     printf("[EE] Failed to read PGD[%u] with errno %d!\n", pgd_index(virt_addr), -ret);
-                #endif
+                //#endif
                 return ret;
             }
 
-            #if LOG_LVL_PTW >= LOG_DEBUG
-                printf("[DD] Read PGD[%u], got PMD PA ", pgd_index(virt_addr));
-                print_phys_addr(&pmd_phys_addr);
-                printf(".\n");
-            #endif
+            //#if LOG_LVL_PTW >= LOG_DEBUG
+            //    printf("[DD] Read PGD[%u], got PMD PA ", pgd_index(virt_addr));
+            //    print_phys_addr(&pmd_phys_addr);
+            //    printf(".\n");
+            //#endif
 
             #ifdef PTW_MEAS_PERF
                 perf_cycles_push();
@@ -214,9 +214,9 @@ int virt_addr_to_page_phys_addr(const virt_addr_t virt_addr,
 
             ret = config_pmd_rab_slice(&pmd_phys_addr);
             if (ret < 0) {
-                #if LOG_LVL_PTW >= LOG_ERR
+                //#if LOG_LVL_PTW >= LOG_ERR
                     printf("[EE] Failed to setup RAB slice for PMD with errno %d!\n", -ret);
-                #endif
+                //#endif
                 return ret;
             }
 
@@ -229,17 +229,17 @@ int virt_addr_to_page_phys_addr(const virt_addr_t virt_addr,
         phys_addr_t pte_phys_addr;
         ret = get_pte_phys_addr(pmd_index(virt_addr), &pte_phys_addr);
         if (ret < 0) {
-            #if LOG_LVL_PTW >= LOG_ERR
+            //#if LOG_LVL_PTW >= LOG_ERR
                 printf("[EE] Failed to read PMD[%u] with errno %d!\n", pmd_index(virt_addr), -ret);
-            #endif
+            //#endif
             return ret;
         }
 
-        #if LOG_LVL_PTW >= LOG_DEBUG
-            printf("[DD] Read PMD[%u], got PTE PA ", pmd_index(virt_addr));
-            print_phys_addr(&pte_phys_addr);
-            printf(".\n");
-        #endif
+        //#if LOG_LVL_PTW >= LOG_DEBUG
+        //    printf("[DD] Read PMD[%u], got PTE PA ", pmd_index(virt_addr));
+        //    print_phys_addr(&pte_phys_addr);
+        //    printf(".\n");
+        //#endif
 
         #ifdef PTW_MEAS_PERF
             perf_cycles_push();
@@ -247,9 +247,9 @@ int virt_addr_to_page_phys_addr(const virt_addr_t virt_addr,
 
         ret = config_pte_rab_slice(&pte_phys_addr);
         if (ret < 0) {
-            #if LOG_LVL_PTW >= LOG_ERR
+            //#if LOG_LVL_PTW >= LOG_ERR
                 printf("[EE] Failed to setup RAB slice for PTE with errno %d!\n", -ret);
-            #endif
+            //#endif
             return ret;
         }
 
@@ -286,17 +286,17 @@ int virt_addr_to_page_phys_addr(const virt_addr_t virt_addr,
 
     ret = get_page_phys_addr(pte_index(virt_addr), page_phys_addr, page_rdonly);
     if (ret < 0) {
-        #if LOG_LVL_PTW >= LOG_ERR
+        //#if LOG_LVL_PTW >= LOG_ERR
             printf("[EE] Failed to read PTE[%u] with errno %d!\n", pte_index(virt_addr), -ret);
-        #endif
+        //#endif
         return ret;
     }
 
-    #if LOG_LVL_PTW >= LOG_DEBUG
-        printf("[DD] Read PTE[%u], got page PA ", pte_index(virt_addr));
-        print_phys_addr(page_phys_addr);
-        printf(".\n");
-    #endif
+    //#if LOG_LVL_PTW >= LOG_DEBUG
+    //    printf("[DD] Read PTE[%u], got page PA ", pte_index(virt_addr));
+    //    print_phys_addr(page_phys_addr);
+    //    printf(".\n");
+    //#endif
 
     #ifdef PTW_MEAS_PERF
         perf_cycles_push();

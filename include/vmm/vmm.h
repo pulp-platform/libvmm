@@ -22,10 +22,6 @@
 
 #include <stddef.h>     // size_t
 
-#ifndef LOG_LVL_VMM
-    #define LOG_LVL_VMM LOG_ERR
-#endif
-
 /**
  * Translate a virtual address to its page physical address.
  *

@@ -78,35 +78,35 @@ int map_page(const void* const virt_ptr)
     unsigned char   page_rdonly;
     ret = virt_addr_to_page_phys_addr(virt_addr, &page_phys_addr, &page_rdonly);
     if (ret != 0) {
-        #if LOG_LVL_VMM >= LOG_CRIT
-            printf("[CC] Failed to find the page physical address for VA ");
-            print_virt_addr(&virt_addr);
-            printf(" with errno %d!\n", -ret);
-        #endif
-        #if LOG_LVL_VMM >= LOG_DEBUG
-            print_rab_cfg(RAB_CFG_VMM_BPTR, RAB_CFG_EPTR, 1);
-        #endif
+        //#if LOG_LVL_VMM >= LOG_CRIT
+        //    printf("[CC] Failed to find the page physical address for VA ");
+        //    print_virt_addr(&virt_addr);
+        //    printf(" with errno %d!\n", -ret);
+        //#endif
+        //#if LOG_LVL_VMM >= LOG_DEBUG
+        //    print_rab_cfg(RAB_CFG_VMM_BPTR, RAB_CFG_EPTR, 1);
+        //#endif
         return ret;
     }
 
     const virt_addr_t page_virt_addr = page_addr((unsigned)virt_addr);
     ret = config_page_rab_entry(page_virt_addr, &page_phys_addr, page_rdonly, 1);
     if (ret != 0) {
-        #if LOG_LVL_VMM >= LOG_CRIT
-            printf("[CC] Failed to configure RAB entry for page with VA ");
-            print_virt_addr(&page_virt_addr);
-            printf(", PA");
-            print_phys_addr(&page_phys_addr);
-            printf(" with errno %d!\n", -ret);
-        #endif
+        //#if LOG_LVL_VMM >= LOG_CRIT
+        //    printf("[CC] Failed to configure RAB entry for page with VA ");
+        //    print_virt_addr(&page_virt_addr);
+        //    printf(", PA");
+        //    print_phys_addr(&page_phys_addr);
+        //    printf(" with errno %d!\n", -ret);
+        //#endif
         return ret;
     }
 
     #if VMM_RAB_LVL == 1
-        #if LOG_LVL_VMM >= LOG_TRACE
-            log_trace(LOG_LVL_VMM, "RAB configuration after mapping page:\n");
-            print_rab_cfg(RAB_CFG_BPTR, RAB_CFG_EPTR, 1);
-        #endif
+        //#if LOG_LVL_VMM >= LOG_TRACE
+        //    log_trace(LOG_LVL_VMM, "RAB configuration after mapping page:\n");
+        //    print_rab_cfg(RAB_CFG_BPTR, RAB_CFG_EPTR, 1);
+        //#endif
     #endif
 
     return 0;
@@ -121,27 +121,27 @@ int map_pages(const void* const virt_ptr, const size_t n_bytes)
     // Make sure that the requested number of pages can be simultaneously mapped by RAB.
     const unsigned n_pages = ((last_page - first_page) >> PAGE_SHIFT) + 1;
     if (n_pages > RAB_CFG_VMM_N_SLICES) {
-        log_err(LOG_LVL_VMM, "Failed to map %d pages because RAB can hold at most %d slices!\n",
-                n_pages, RAB_CFG_VMM_N_SLICES);
+        //log_err(LOG_LVL_VMM, "Failed to map %d pages because RAB can hold at most %d slices!\n",
+        //        n_pages, RAB_CFG_VMM_N_SLICES);
         return -ENOMEM;
     }
 
     for (virt_addr_t page_addr = first_page; page_addr <= last_page; page_addr += PAGE_SIZE) {
         const int ret = map_page((void*)page_addr);
         if (ret < 0) {
-            #if LOG_LVL_VMM >= LOG_ERR
-                printf("[EE] Failed to map page for VA ");
-                print_virt_addr(&page_addr);
-                printf(" with errno %d!\n", -ret);
-            #endif
+            //#if LOG_LVL_VMM >= LOG_ERR
+            //    printf("[EE] Failed to map page for VA ");
+            //    print_virt_addr(&page_addr);
+            //    printf(" with errno %d!\n", -ret);
+            //#endif
             return ret;
         }
     }
 
-    #if LOG_LVL_VMM >= LOG_DEBUG
-        log_debug(LOG_LVL_VMM, "Successfully mapped %d pages into RAB.\n", n_pages);
-        print_rab_cfg(RAB_CFG_BPTR, RAB_CFG_EPTR, 1);
-    #endif
+    //#if LOG_LVL_VMM >= LOG_DEBUG
+    //    log_debug(LOG_LVL_VMM, "Successfully mapped %d pages into RAB.\n", n_pages);
+    //    print_rab_cfg(RAB_CFG_BPTR, RAB_CFG_EPTR, 1);
+    //#endif
 
     return 0;
 }
@@ -198,18 +198,18 @@ int unmap_page(const void* const virt_ptr)
         rab_cfg_val_t val;
         ret = read_rab_cfg_val(&val, slice);
         if (ret != 0) {
-            #if LOG_LVL_VMM >= LOG_ERR
-                printf("[EE] Failed to read RAB slice with errno %d!\n", -ret);
-            #endif
+            //#if LOG_LVL_VMM >= LOG_ERR
+            //    printf("[EE] Failed to read RAB slice with errno %d!\n", -ret);
+            //#endif
             return ret;
         }
 
         if (rab_slice_is_enabled(&val) && rab_slice_contains_virt_addr(&val, virt_addr)) {
             ret = disable_rab_slice(slice);
             if (ret != 0) {
-                #if LOG_LVL_VMM >= LOG_ERR
-                    printf("[EE] Failed to disable RAB slice with errno %d!\n", -ret);
-                #endif
+                //#if LOG_LVL_VMM >= LOG_ERR
+                //    printf("[EE] Failed to disable RAB slice with errno %d!\n", -ret);
+                //#endif
                 return ret;
             }
             remove_from_recently_mapped_pages(page_addr(virt_addr));
@@ -261,81 +261,81 @@ int handle_rab_misses()
                         return 0;
                     break;
                 default:
-                    #if LOG_LVL_VMM >= LOG_ERR
+                    //#if LOG_LVL_VMM >= LOG_ERR
                         printf("[EE] Failed to get RAB miss with errno %d!\n", -ret);
-                    #endif
+                    //#endif
                     break;  // required in case the `printf()` above is removed by the preprocessor
             }
             return ret;
         }
 
         if (rab_miss.intra_cluster_id != 0x2) {
-            #if LOG_LVL_VMM >= LOG_CRIT
+            //#if LOG_LVL_VMM >= LOG_CRIT
                 printf("[CC] Can only handle RAB misses from cores! Will not map VA ");
                 print_virt_addr(&(rab_miss.virt_addr));
                 printf(" for ID 0x%X\n",
                  (rab_miss.intra_cluster_id << AXI_ID_WIDTH_CORE) | rab_miss.core_id);
-            #endif
+            //#endif
             continue;
         } else if ( (rab_miss.cluster_id == mht.cluster_id) && (rab_miss.core_id == mht.core_id) ) {
-            #if LOG_LVL_VMM >= LOG_INFO
-                printf("[II] Skipping RAB miss produced by MHT.\n");
-            #endif
+            //#if LOG_LVL_VMM >= LOG_INFO
+            //    printf("[II] Skipping RAB miss produced by MHT.\n");
+            //#endif
             continue;
         } else {
-            #if LOG_LVL_VMM >= LOG_INFO
-                printf("[II] Handling miss by core ");
-                print_other_cluster_core_id(rab_miss.cluster_id, rab_miss.core_id);
-                printf(" at VA ");
-                print_virt_addr(&(rab_miss.virt_addr));
-                printf(".\n");
-            #endif
+            //#if LOG_LVL_VMM >= LOG_INFO
+            //    printf("[II] Handling miss by core ");
+            //    print_other_cluster_core_id(rab_miss.cluster_id, rab_miss.core_id);
+            //    printf(" at VA ");
+            //    print_virt_addr(&(rab_miss.virt_addr));
+            //    printf(".\n");
+            //#endif
 
             const virt_addr_t miss_page = page_addr(rab_miss.virt_addr);
             if ( !page_has_recently_been_mapped(miss_page) && !page_is_mapped(miss_page) ) {
                 ret = map_page((void*)(miss_page));
                 if (ret < 0) {
-                    #if LOG_LVL_VMM >= LOG_ERR
+                    //#if LOG_LVL_VMM >= LOG_ERR
                         printf("[EE] Failed to map page for VA ");
                         print_virt_addr(&(rab_miss.virt_addr));
                         printf(" for core ");
                         print_other_cluster_core_id(rab_miss.cluster_id, rab_miss.core_id);
                         printf(" with errno %d!\n", -ret);
-                    #endif
+                    //#endif
                     return ret;
                 } else {
                     add_to_recently_mapped_pages(miss_page);
-                    #if LOG_LVL_VMM >= LOG_DEBUG
-                        printf("[DD] Page at VA ");
-                        print_virt_addr(&(miss_page));
-                        printf(" mapped successfully.\n");
-                    #endif
+                    //#if LOG_LVL_VMM >= LOG_DEBUG
+                    //    printf("[DD] Page at VA ");
+                    //    print_virt_addr(&(miss_page));
+                    //    printf(" mapped successfully.\n");
+                    //#endif
                 }
             } else {
-                #if LOG_LVL_VMM >= LOG_DEBUG
-                    log_debug(LOG_LVL_VMM, "Did not map page for VA ");
-                    print_virt_addr(&miss_page);
-                    printf(" because it has been mapped recently.\n");
-                #endif
+                //#if LOG_LVL_VMM >= LOG_DEBUG
+                //    log_debug(LOG_LVL_VMM, "Did not map page for VA ");
+                //    print_virt_addr(&miss_page);
+                //    printf(" because it has been mapped recently.\n");
+                //#endif
             }
 
             if (!rab_miss.is_prefetch) {
                 ret = wake_up_core(rab_miss.cluster_id, rab_miss.core_id);
                 if (ret < 0) {
-                    #if LOG_LVL_VMM >= LOG_ERR
+                    //#if LOG_LVL_VMM >= LOG_ERR
                         printf("[EE] Failed to wake up core ");
                         print_other_cluster_core_id(rab_miss.cluster_id, rab_miss.core_id);
                         printf(" with errno %d!\n", -ret);
-                    #endif
+                    //#endif
                     return ret;
                 }
-                #if LOG_LVL_VMM >= LOG_TRACE
-                    log_trace(LOG_LVL_VMM, "Woke up core ");
-                    print_other_cluster_core_id(rab_miss.cluster_id, rab_miss.core_id);
-                    printf(".\n");
-                #endif
+                //#if LOG_LVL_VMM >= LOG_TRACE
+                //    log_trace(LOG_LVL_VMM, "Woke up core ");
+                //    print_other_cluster_core_id(rab_miss.cluster_id, rab_miss.core_id);
+                //    printf(".\n");
+                //#endif
             } else {
-                log_debug(LOG_LVL_VMM, "Did not wake up core due to prefetch.\n");
+                //log_debug(LOG_LVL_VMM, "Did not wake up core due to prefetch.\n");
             }
 
             ++n_misses_handled;

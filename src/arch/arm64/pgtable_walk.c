@@ -22,9 +22,9 @@
 #include "stdio.h"
 
 #ifdef STATIC_PMD_SLICES
-    #define PGD_EPTR    ((PGD_BPTR))    // PGD is not mapped in this mode.
+    #define PGD_EPTR    ((VMM_PGD_BPTR))    // PGD is not mapped in this mode.
 #else
-    #define PGD_EPTR    ((PGD_BPTR) + PTRS_PER_PGD)
+    #define PGD_EPTR    ((VMM_PGD_BPTR) + PTRS_PER_PGD)
 #endif
 #define PMD_BPTR    ((PGD_EPTR))
 #ifdef STATIC_PMD_SLICES
@@ -64,7 +64,7 @@ static inline int get_pmd_phys_addr(const unsigned pgd_index, phys_addr_t* const
         perf_cycles_push();
     #endif
 
-    const phys_addr_t* const pgd_ptr = PGD_BPTR + pgd_index;
+    const phys_addr_t* const pgd_ptr = VMM_PGD_BPTR + pgd_index;
     ret = copy_phys_addr(pmd_phys_addr, pgd_ptr);
     if (ret < 0)
         return ret;

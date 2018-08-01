@@ -21,8 +21,8 @@
 
 #include "stdio.h"
 
-#define PGD_EPTR    ((PGD_BPTR) + PTRS_PER_PGD * 2) // There are twice as many entries per PGD than
-                                                    // used by Linux.
+#define PGD_EPTR    ((VMM_PGD_BPTR) + PTRS_PER_PGD * 2) // There are twice as many entries per PGD
+                                                        // than used by Linux.
 #define PTE_BPTR    ((PGD_EPTR))
 #define PTE_EPTR    ((PTE_BPTR) + PTRS_PER_PTE)
 
@@ -51,7 +51,7 @@ static inline int get_pte_phys_addr(const unsigned pgd_index, phys_addr_t* const
         perf_cycles_push();
     #endif
 
-    const phys_addr_t* const pgd_ptr = PGD_BPTR + pgd_index;
+    const phys_addr_t* const pgd_ptr = VMM_PGD_BPTR + pgd_index;
     ret = copy_phys_addr(pte_phys_addr, pgd_ptr);
     if (ret < 0)
         return ret;

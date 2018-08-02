@@ -16,6 +16,7 @@
 
 #include "archi-host/arm/pgtable_hwdef.h"
 #include "hal/rab/rab_v1.h"
+#include "rt/rt_alloc.h"    // rt_alloc(), rt_free()
 #include "rt/rt_debug.h"
 #include "vmm/config.h"
 #include "vmm/host.h"
@@ -204,9 +205,15 @@ int virt_addr_to_page_phys_addr(const virt_addr_t virt_addr,
             }
 
             #if RT_LOG_DEBUGS(LOG_LVL_PTW)
-                rt_debug("Read PGD[%u], got PMD PA ", pgd_index(virt_addr));
-                print_phys_addr(&pmd_phys_addr);
-                printf(".\n");
+            {
+                const size_t buf_size = sizeof(char) * PHYS_ADDR_STRLEN;
+                char* const buf = rt_alloc(RT_ALLOC_CL_DATA, buf_size);
+                if (buf != NULL) {
+                    sprint_phys_addr(buf, &pmd_phys_addr);
+                    rt_debug("Read PGD[%u], got PMD PA %s.\n", pgd_index(virt_addr), buf);
+                    rt_free(RT_ALLOC_CL_DATA, buf, buf_size);
+                }
+            }
             #endif
 
             #ifdef PTW_MEAS_PERF
@@ -237,9 +244,15 @@ int virt_addr_to_page_phys_addr(const virt_addr_t virt_addr,
         }
 
         #if RT_LOG_DEBUGS(LOG_LVL_PTW)
-            rt_debug("Read PMD[%u], got PTE PA ", pmd_index(virt_addr));
-            print_phys_addr(&pte_phys_addr);
-            printf(".\n");
+        {
+            const size_t buf_size = sizeof(char) * PHYS_ADDR_STRLEN;
+            char* const buf = rt_alloc(RT_ALLOC_CL_DATA, buf_size);
+            if (buf != NULL) {
+                sprint_phys_addr(buf, &pte_phys_addr);
+                rt_debug("Read PMD[%u], got PTE PA %s.\n", pmd_index(virt_addr), buf);
+                rt_free(RT_ALLOC_CL_DATA, buf, buf_size);
+            }
+        }
         #endif
 
         #ifdef PTW_MEAS_PERF
@@ -294,9 +307,15 @@ int virt_addr_to_page_phys_addr(const virt_addr_t virt_addr,
     }
 
     #if RT_LOG_DEBUGS(LOG_LVL_PTW)
-        rt_debug("Read PTE[%u], got page PA ", pte_index(virt_addr));
-        print_phys_addr(page_phys_addr);
-        printf(".\n");
+    {
+        const size_t buf_size = sizeof(char) * PHYS_ADDR_STRLEN;
+        char* const buf = rt_alloc(RT_ALLOC_CL_DATA, buf_size);
+        if (buf != NULL) {
+            sprint_phys_addr(buf, &page_phys_addr);
+            rt_debug("Read PTE[%u], got page PA %s.\n", pte_index(virt_addr), buf);
+            rt_free(RT_ALLOC_CL_DATA, buf, buf_size);
+        }
+    }
     #endif
 
     #ifdef PTW_MEAS_PERF

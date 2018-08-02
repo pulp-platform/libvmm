@@ -18,6 +18,12 @@
 #define __VMM_CONFIG_H__
 
 #include "archi-host/phys_addr.h"   // phys_addr_t
+#include "rt/rt_debug.h"            // RT_LOG_* levels
+
+// Logging level of the VMM library
+#ifndef LOG_LVL_VMM
+    #define LOG_LVL_VMM RT_LOG_ERROR
+#endif
 
 // Begin of the PULP VA range where the kernel driver maps the first-level page table.
 #define VMM_PGD_BPTR    ((phys_addr_t*)0x20000000)

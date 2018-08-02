@@ -24,6 +24,7 @@
 #include "pulp.h"
 #include "stdio.h"
 #include "vmm/config.h"
+#include "vmm/host.h"
 
 #include <errno.h>
 

@@ -58,7 +58,7 @@ static inline int config_page_rab_entry(const virt_addr_t page_virt_addr,
         const virt_pfn_t virt_pfn = virt_addr2pfn(page_virt_addr);
         const phys_pfn_t phys_pfn = phys_addr2pfn(page_phys_addr);
 
-        const l2_set_t l2_set = page_set(virt_pfn);
+        const rab_l2_set_t l2_set = page_set(virt_pfn);
 
         // RAB L2 entries are being replaced through the FIFO algorithm on a set basis.
         if (page_rab_cfg_l2_i_set[l2_set] >= RAB_L2_N_ENTRIES_PER_SET)

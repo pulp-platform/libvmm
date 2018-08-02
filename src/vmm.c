@@ -185,7 +185,7 @@ static inline void remove_from_recently_mapped_pages(const virt_addr_t page_addr
 
 static inline unsigned page_is_mapped(const virt_addr_t page_addr)
 {
-    return !GOMP_pulp_RAB_tryread_prefetch((const unsigned int* const)page_addr);
+    return !pulp_tryread_prefetch((const unsigned int* const)page_addr);
 }
 
 int unmap_page(const void* const virt_ptr)

@@ -17,7 +17,7 @@
 #ifndef __VMM_CONFIG_H__
 #define __VMM_CONFIG_H__
 
-#include "archi-host/phys_addr.h"
+#include "archi-host/phys_addr.h"   // phys_addr_t
 
 // Begin of the PULP VA range where the kernel driver maps the first-level page table.
 #define VMM_PGD_BPTR    ((phys_addr_t*)0x20000000)

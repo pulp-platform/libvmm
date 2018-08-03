@@ -19,6 +19,7 @@
 #include "archi-host/pgtable_hwdef.h"
 #include "archi-host/phys_addr.h"
 #include "archi-host/virt_addr.h"
+#include "hal/utils.h"                  // BIT_MASK_ONE()
 #include "hal/rab/rab_v1.h"
 #include "pulp.h"
 #include "stdio.h"
@@ -228,7 +229,7 @@ int unmap_page(const void* const virt_ptr)
 static inline int wake_up_core(const int cluster_id, const int core_id)
 {
     unsigned int wake_up_addr;
-    const unsigned int core_mask = BIT_N_SET(core_id);
+    const unsigned int core_mask = BIT_MASK_ONE(core_id);
     if (cluster_id == get_cluster_id()) // wake up through demux
         wake_up_addr = eu_evt_trig_addr(ARCHI_EVT_RAB_WAKEUP);
     else    // wake up through peripheral interconnect

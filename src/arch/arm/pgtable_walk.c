@@ -16,6 +16,7 @@
 
 #include "archi-host/arm/pgtable_hwdef.h"
 #include "hal/rab/rab_v1.h"
+#include "rt/rt_debug.h"
 #include "vmm/config.h"
 #include "vmm/host.h"
 
@@ -31,6 +32,10 @@
 #endif
 #ifdef PTW_MEAS_PERF
     #define MEAS_PERF
+#endif
+
+#ifndef LOG_LVL_PTW
+    #define LOG_LVL_PTW RT_LOG_ERROR
 #endif
 
 /**
@@ -62,7 +67,9 @@ static inline int get_pte_phys_addr(const unsigned pgd_index, phys_addr_t* const
 
     ret = pgd_val_is_pte_addr(pte_phys_addr);
     if (ret != 1) {
-        printf("[EE] get_pte_phys_addr: no valid PTE entry in PGD!\n");
+        #if RT_LOG_ERRORS(LOG_LVL_PTW)
+            rt_error("get_pte_phys_addr: no valid PTE entry in PGD!\n");
+        #endif
         return ret;
     }
 
@@ -99,7 +106,9 @@ static inline int get_page_phys_addr(const unsigned pte_index, phys_addr_t* cons
 
     ret = pte_val_is_valid_page_addr(page_phys_addr);
     if (ret != 1) {
-        printf("[EE] get_page_phys_addr: no valid page address!\n");
+        #if RT_LOG_ERRORS(LOG_LVL_PTW)
+            rt_error("get_page_phys_addr: no valid page address!\n");
+        #endif
         return ret;
     }
 
@@ -137,7 +146,9 @@ int virt_addr_to_page_phys_addr(const virt_addr_t virt_addr,
         phys_addr_t pte_phys_addr;
         ret = get_pte_phys_addr(pgd_index(virt_addr), &pte_phys_addr);
         if (ret < 0) {
-            printf("[EE] Failed to read PGD[%u] with errno %d!\n", pgd_index(virt_addr), -ret);
+            #if RT_LOG_ERRORS(LOG_LVL_PTW)
+                rt_error("Failed to read PGD[%u] with errno %d!\n", pgd_index(virt_addr), -ret);
+            #endif
             return ret;
         }
 
@@ -147,7 +158,9 @@ int virt_addr_to_page_phys_addr(const virt_addr_t virt_addr,
 
         ret = config_pte_rab_slice(&pte_phys_addr);
         if (ret < 0) {
-            printf("[EE] Failed to setup RAB slice for PTE with errno %d!\n", -ret);
+            #if RT_LOG_ERRORS(LOG_LVL_PTW)
+                rt_error("Failed to setup RAB slice for PTE with errno %d!\n", -ret);
+            #endif
             return ret;
         }
 
@@ -161,7 +174,9 @@ int virt_addr_to_page_phys_addr(const virt_addr_t virt_addr,
 
     ret = get_page_phys_addr(pte_index(virt_addr), page_phys_addr, page_rdonly);
     if (ret < 0) {
-        printf("[EE] Failed to read PTE[%u] with errno %d!\n", pte_index(virt_addr), -ret);
+        #if RT_LOG_ERRORS(LOG_LVL_PTW)
+            rt_error("Failed to read PTE[%u] with errno %d!\n", pte_index(virt_addr), -ret);
+        #endif
         return ret;
     }
 

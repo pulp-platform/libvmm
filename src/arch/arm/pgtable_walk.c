@@ -107,7 +107,8 @@ static inline int get_page_phys_addr(const unsigned pte_index, phys_addr_t* cons
     ret = pte_val_is_valid_page_addr(page_phys_addr);
     if (ret != 1) {
         #if RT_LOG_ERRORS(LOG_LVL_PTW)
-            rt_error("get_page_phys_addr: no valid page address!\n");
+            rt_error("get_page_phys_addr: 0x%08x is not a valid page address!\n",
+                    (unsigned)page_phys_addr);
         #endif
         return ret;
     }

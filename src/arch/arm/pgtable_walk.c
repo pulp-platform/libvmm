@@ -125,6 +125,11 @@ static inline int get_page_phys_addr(const unsigned pte_index, phys_addr_t* cons
 
 static inline int config_pte_rab_slice(const phys_addr_t* const pte_phys_addr)
 {
+    #if RT_LOG_DEBUGS(LOG_LVL_PTW)
+        rt_debug("Configuring RAB slice at 0x%08x for PTE: 0x%08x..%08x -> 0x%08x.\n",
+                (unsigned)RAB_CFG_PTE_PTR, (unsigned)PTE_BPTR, (unsigned)PTE_EPTR,
+                (unsigned)pte_phys_addr);
+    #endif
     return config_rab_slice((virt_addr_t)PTE_BPTR, (virt_addr_t)PTE_EPTR, pte_phys_addr,
             RAB_CFG_PTE_PTR, 1, 1);
 }

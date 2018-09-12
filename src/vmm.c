@@ -186,6 +186,14 @@ static virt_addr_t recently_mapped_pages[ARCHI_NB_PE] = {0};
 virt_addr_t* const rmp_eptr = recently_mapped_pages + ARCHI_NB_PE;
 virt_addr_t*       rmp_wptr = recently_mapped_pages;
 
+static inline void reset_recently_mapped_pages()
+{
+    for (unsigned i=0; i<ARCHI_NB_PE; i++) {
+        recently_mapped_pages[i] = 0;
+    }
+    rmp_wptr = recently_mapped_pages;
+}
+
 static inline unsigned page_has_recently_been_mapped(const virt_addr_t page_addr)
 {
     for (const virt_addr_t* rmp_rptr = recently_mapped_pages; rmp_rptr < rmp_eptr; ++rmp_rptr) {
@@ -400,4 +408,11 @@ int handle_rab_misses()
             ++n_misses_handled;
         }
     }
+}
+
+void reset_vmm()
+{
+    reset_recently_mapped_pages();
+
+    page_rab_cfg_ptr = RAB_CFG_VMM_BPTR;
 }

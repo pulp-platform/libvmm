@@ -83,4 +83,11 @@ int unmap_page(const void* const virt_ptr);
  */
 int handle_rab_misses();
 
+/**
+ * Reset all relevant VMM data structures statically allocated in L1 memory.
+ *
+ * This function must be called in case the L1 memory is not loaded.
+ */
+void reset_vmm();
+
 #endif

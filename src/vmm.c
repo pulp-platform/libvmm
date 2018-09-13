@@ -47,6 +47,17 @@ typedef struct mht_t {
     static unsigned char page_rab_cfg_l2_i_set[RAB_L2_N_SETS] = {0};
 #endif
 
+static inline void reset_page_rab_cfg_ptrs()
+{
+    page_rab_cfg_ptr = RAB_CFG_VMM_BPTR;
+
+    #if (VMM_RAB_LVL == 2)
+        for (unsigned i=0; i<RAB_L2_N_SETS; i++) {
+            page_rab_cfg_l2_i_set[i] = 0;
+        }
+    #endif
+}
+
 static inline int config_page_rab_entry(const virt_addr_t page_virt_addr,
         const phys_addr_t* const page_phys_addr, const unsigned char page_rdonly,
         const unsigned char cache_coherent)
@@ -187,6 +198,14 @@ __attribute__((section(".heapsram")))
 static virt_addr_t recently_mapped_pages[ARCHI_NB_PE] = {0};
 virt_addr_t* const rmp_eptr = recently_mapped_pages + ARCHI_NB_PE;
 virt_addr_t*       rmp_wptr = recently_mapped_pages;
+
+static inline void reset_recently_mapped_pages()
+{
+    for (unsigned i=0; i<ARCHI_NB_PE; i++) {
+        recently_mapped_pages[i] = 0;
+    }
+    rmp_wptr = recently_mapped_pages;
+}
 
 static inline unsigned page_has_recently_been_mapped(const virt_addr_t page_addr)
 {
@@ -402,4 +421,11 @@ int handle_rab_misses()
             ++n_misses_handled;
         }
     }
+}
+
+void reset_vmm()
+{
+    reset_recently_mapped_pages();
+
+    reset_page_rab_cfg_ptrs();
 }

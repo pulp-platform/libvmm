@@ -33,6 +33,7 @@
 #define RAB_CFG_VMM_BPTR        ((rab_cfg_t*)(RAB_CFG_PTE_PTR + 1))
 #define RAB_CFG_VMM_N_SLICES    ((unsigned)(RAB_CFG_EPTR - RAB_CFG_VMM_BPTR))
 
+__attribute__((section(".heapsram")))
 static rab_cfg_t* page_rab_cfg_ptr = RAB_CFG_VMM_BPTR;
 
 typedef struct mht_t {
@@ -42,6 +43,7 @@ typedef struct mht_t {
 
 
 #if (VMM_RAB_LVL == 2)
+    __attribute__((section(".heapsram")))
     static unsigned char page_rab_cfg_l2_i_set[RAB_L2_N_SETS] = {0};
 #endif
 

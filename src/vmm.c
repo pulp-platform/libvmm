@@ -45,6 +45,17 @@ typedef struct mht_t {
     static unsigned char page_rab_cfg_l2_i_set[RAB_L2_N_SETS] = {0};
 #endif
 
+static inline void reset_page_rab_cfg_ptrs()
+{
+    page_rab_cfg_ptr = RAB_CFG_VMM_BPTR;
+
+    #if (VMM_RAB_LVL == 2)
+        for (unsigned i=0; i<RAB_L2_N_SETS; i++) {
+            page_rab_cfg_l2_i_set[i] = 0;
+        }
+    #endif
+}
+
 static inline int config_page_rab_entry(const virt_addr_t page_virt_addr,
         const phys_addr_t* const page_phys_addr, const unsigned char page_rdonly,
         const unsigned char cache_coherent)
@@ -414,5 +425,5 @@ void reset_vmm()
 {
     reset_recently_mapped_pages();
 
-    page_rab_cfg_ptr = RAB_CFG_VMM_BPTR;
+    reset_page_rab_cfg_ptrs();
 }

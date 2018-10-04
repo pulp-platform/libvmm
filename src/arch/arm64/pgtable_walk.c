@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "archi-host/arm/pgtable_hwdef.h"
+#include "archi-host/arm64/pgtable_hwdef.h"
 #include "hal/rab/rab_v1.h"
 #include "rt/rt_alloc.h"    // rt_alloc(), rt_free()
 #include "rt/rt_debug.h"
